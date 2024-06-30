@@ -70,3 +70,93 @@ exports.deleteUser = (req, res) => {
     res.status(204).send();
   });
 };
+
+
+/*Peliculas*/
+
+// Obtener todas las películas
+exports.getAllPeliculas = async (req, res) => {
+
+  const query = 'SELECT * FROM Peliculas';
+
+  db.execute(query, (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.status(200).send(results);
+  });
+
+};
+
+// Obtener una película por ID
+exports.getPeliculaById = async (req, res) => {
+  const { id } = req.params;
+  const query = 'SELECT * FROM Peliculas WHERE id_pelicula = ?';
+  db.execute(query, [id], (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Movie not found');
+    }
+    res.status(200).send(results[0]);
+  });
+
+};
+
+// Crear una nueva película
+exports.createPelicula = async (req, res) => {
+  const { titulo, director, año, genero } = req.body;
+  const query='INSERT INTO Peliculas (titulo, director, año, genero) VALUES (?, ?, ?, ?)';
+  db.execute(query, [titulo, director, año, genero ], (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.status(201).send({ id: results.insertId, titulo, director, año, genero});
+  });
+};
+
+// Actualizar una película por ID
+exports.updatePelicula = async (req, res) => {
+  const { id } = req.params;
+  const { titulo, director, año, genero } = req.body;
+  const query = 'UPDATE Peliculas SET titulo = ?, director = ?, año = ?, genero = ? WHERE id_pelicula = ?';
+  db.execute(query, [titulo, director, año, genero , id], (err) => {
+    if (err) {
+      
+      res.status(404).json({ message: 'Película no encontrada o sin cambios.' });
+      return res.status(500).send(err);
+    }
+    res.json({ message: 'Película actualizada exitosamente.' });
+    res.status(200).send({ id, titulo, director, año, genero });
+  });
+};
+
+ 
+
+// Eliminar una película por ID
+exports.deletePelicula = async (req, res) => {
+  const { id } = req.params;
+  const query = 'DELETE FROM Peliculas WHERE id_pelicula = ?'
+  db.execute(query, [id], (err) => {
+    if (err) {
+      res.status(500).json({ message: 'Hubo un error al eliminar la película.' });
+      return res.status(500).send(err);
+      
+    }
+    res.json({ message: 'Película eliminada exitosamente.' });
+    res.status(204).send();
+  });
+
+  /*try {
+    const [result, fields] = await db.execute('DELETE FROM Peliculas WHERE id_pelicula = ?', [id]);
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: 'Película no encontrada.' });
+    } else {
+      res.json({ message: 'Película eliminada exitosamente.' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Hubo un error al eliminar la película.' });
+  }*/
+};
