@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operaciones CRUD de Usuarios</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Operaciones CRUD de Usuarios</h1>
+        <ul>
+            <li><a href="Create.html">Crear Usuario</a></li>
+            <li><a href="Update.html">Modificar Usuario</a></li>
+            <li><a href="delete.html">Eliminar Usuario</a></li>
+        </ul>
+    </div>
+    <h2>Obtener Usuarios</h2>
+    <button id="getUsersButton">Obtener Usuarios</button>
+    <div id="usersList"></div>
+        <script>
+            document.getElementById('getUsersButton').addEventListener('click', function() {
+            fetch('/api/usuarios')
+            .then(response => response.json())
+            .then(data => {
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '';
+                data.forEach(user => {
+                    usersList.innerHTML += `<p>ID: ${user.id_usuario}, Nombre: ${user.nombreUsuario}, Email: ${user.mail}</p>`;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+        </script>
+
+</body>
+</html>

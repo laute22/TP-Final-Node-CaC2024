@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Usuario</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2 class="actualizarh2">Actualizar Usuario</h2>
+    <form id="updateUserForm">
+        <label for="updateId">ID del Usuario:</label>
+        <input type="number" id="updateId" required>
+        <br>
+        <label for="updateNombreUsuario">Nombre de Usuario:</label>
+        <input type="text" id="updateNombreUsuario" required>
+        <br>
+        <label for="updateMail">Email:</label>
+        <input type="email" id="updateMail" required>
+        <br>
+        <label for="updateContraseña">Contraseña:</label>
+        <input type="password" id="updateContraseña" required>
+        <br>
+        <button type="submit">Actualizar Usuario</button>
+    </form>
+    <script>
+
+    document.getElementById('updateUserForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const id = document.getElementById('updateId').value;
+            const nombreUsuario = document.getElementById('updateNombreUsuario').value;
+            const mail = document.getElementById('updateMail').value;
+            const contraseña = document.getElementById('updateContraseña').value;
+
+            fetch('/api/usuarios/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nombreUsuario, mail, contraseña })
+            })
+            .then(response => response.json())
+            .then(data => alert('Usuario actualizado: ' + JSON.stringify(data)))
+            .catch(error => console.error('Error:', error));
+        });
+        document.getElementById('getUsersButton').addEventListener('click', function() {
+            fetch('/api/usuarios')
+            .then(response => response.json())
+            .then(data => {
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '';
+                data.forEach(user => {
+                    usersList.innerHTML += `<p>ID: ${user.id_usuario}, Nombre: ${user.nombreUsuario}, Email: ${user.mail}</p>`;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
